@@ -7,7 +7,8 @@ import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 const form = useForm({
-    name: '',
+    first_name: '',
+    last_name: '',
     email: '',
     password: '',
     password_confirmation: '',
@@ -26,19 +27,35 @@ const submit = () => {
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="name" value="Name" />
+                <InputLabel for="first_name" value="First Name" />
 
                 <TextInput
-                    id="name"
+                    id="first_name"
                     type="text"
                     class="mt-1 block w-full"
-                    v-model="form.name"
+                    v-model="form.first_name"
                     required
                     autofocus
                     autocomplete="name"
                 />
 
-                <InputError class="mt-2" :message="form.errors.name" />
+                <InputError class="mt-2" :message="form.errors.first_name" />
+            </div>
+
+            <div>
+                <InputLabel for="last_name" value="Last Name" />
+
+                <TextInput
+                    id="last_name"
+                    type="text"
+                    class="mt-1 block w-full"
+                    v-model="form.last_name"
+                    required
+                    autofocus
+                    autocomplete="name"
+                />
+
+                <InputError class="mt-2" :message="form.errors.last_name" />
             </div>
 
             <div class="mt-4">
@@ -86,6 +103,32 @@ const submit = () => {
                 <InputError class="mt-2" :message="form.errors.password_confirmation" />
             </div>
 
+            <div class="flex items-center space-x-2">
+                <span class="text-gray-600">Inactive</span>
+                <label
+                    for="toggle"
+                    class="flex items-center cursor-pointer"
+                >
+                    <div class="relative">
+                        <!-- Hidden input to store the status value -->
+                        <input
+                            name="role_id"
+                            type="checkbox"
+                            id="toggle"
+                            class="sr-only"
+                            :checked="status"
+                            @change="toggleStatus"
+                        />
+                        <!-- Visible toggle switch -->
+                        <div class="w-10 h-4 bg-gray-300 rounded-full shadow-inner"></div>
+                        <!-- Switch thumb -->
+                        <div class="absolute w-6 h-6 bg-white rounded-full shadow-md transform translate-x-0 transition-transform"></div>
+                    </div>
+                </label>
+                <span class="text-green-500">Active</span>
+            </div>
+
+
             <div class="flex items-center justify-end mt-4">
                 <Link
                     :href="route('login')"
@@ -101,3 +144,19 @@ const submit = () => {
         </form>
     </GuestLayout>
 </template>
+<script>
+export default {
+    data() {
+        return {
+            status: false, // Initial status value
+        };
+    },
+    methods: {
+        toggleStatus() {
+            console.log('jjj');
+            this.status = !this.status;
+            // Add logic to update the status in your database or perform other actions.
+        },
+    }
+};
+</script>
