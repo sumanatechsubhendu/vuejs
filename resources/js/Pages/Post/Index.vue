@@ -59,7 +59,9 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <pagination :links="posts.links" />
+                        <div v-if="posts.data.length" class="w-full flex justify-center mt-8 mb-8">
+                            <Pagination :links="posts.links" />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -68,6 +70,7 @@
 </template>
 
 <script>
+import Pagination from '@/Components/UI/Pagination.vue'
 import BreezeAuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import BreezeNavLink from "@/Components/NavLink.vue";
 import { Head } from "@inertiajs/inertia-vue3";
@@ -78,6 +81,7 @@ export default {
         Head,
         BreezeNavLink,
         Link,
+        Pagination
     },
     props: {
         posts: Object,

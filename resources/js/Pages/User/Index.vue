@@ -27,6 +27,7 @@
                                 users Create
                             </Link> -->
                         </div>
+                        <!-- <UserTable :users="users.data" /> -->
                         <table>
                             <thead class="font-bold bg-gray-300 border-b-2">
                                 <td class="px-4 py-2">ID</td>
@@ -61,7 +62,10 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <pagination :links="users.links" />
+                         <!-- Pagination links -->
+                         <div v-if="users.data.length" class="w-full flex justify-center mt-8 mb-8">
+                            <Pagination :links="users.links" />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -70,8 +74,10 @@
 </template>
 
 <script>
+import Pagination from '@/Components/UI/Pagination.vue'
 import BreezeAuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import BreezeNavLink from "@/Components/NavLink.vue";
+import UserTable from '@/Components/UserTable.vue';
 import { Head } from "@inertiajs/inertia-vue3";
 import { Link } from "@inertiajs/inertia-vue3";
 export default {
@@ -80,6 +86,13 @@ export default {
         Head,
         BreezeNavLink,
         Link,
+        UserTable,
+        Pagination
+    },
+    data() {
+        return {
+        users: [] // Fetch and populate users array from your Laravel backend
+        };
     },
     props: {
         users: Object,
