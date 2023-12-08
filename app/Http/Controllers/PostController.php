@@ -42,6 +42,7 @@ class PostController extends Controller
         Post::create(
             Request::validate([
                 'title' => ['required', 'max:90'],
+                'slug' => ['required', 'max:90'],
                 'description' => ['required'],
             ])
         );
@@ -71,6 +72,7 @@ class PostController extends Controller
         return Inertia::render('Post/Edit', [
             'post' => [
                 'id' => $post->id,
+                'slug' => $post->slug,
                 'title' => $post->title,
                 'description' => $post->description
             ]

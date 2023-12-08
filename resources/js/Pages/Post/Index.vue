@@ -37,9 +37,11 @@
                             <tbody>
                                 <tr v-for="post in posts.data" :key="post.id">
                                     <td class="px-4 py-2">{{ post.id }}</td>
-                                    <td class="px-4 py-2">{{ post.title }}</td>
+                                    <td class="px-4 py-2">{{ post.title }}
+                                    </td>
                                     <td class="px-4 py-2">
-                                        {{ post.description }}
+                                        {{ post.description }}<br/>
+                                        <b>Slug:</b>{{ post.slug }}
                                     </td>
                                     <td class="px-4 py-2 font-extrabold">
                                         <Link
@@ -82,7 +84,13 @@ export default {
     },
     methods: {
         destroy(id) {
-            this.$inertia.delete(route("posts.destroy", id));
+            // Ask for confirmation
+            const isConfirmed = window.confirm("Are you sure you want to delete this post?");
+
+            // If user confirms, proceed with deletion
+            if (isConfirmed) {
+                this.$inertia.delete(route("posts.destroy", id));
+            }
         },
     },
 };

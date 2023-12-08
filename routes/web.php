@@ -37,7 +37,14 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-Route::resource('posts', PostController::class);
-Route::resource('users', UserController::class);
+
+
 Route::get('/about-us', [ExampleController::class, 'index'])->name('about-us');
+
+Route::resource('posts', PostController::class);
+// For backend users
+Route::group(['middleware' => ['auth', 'role:Admin']], function () {
+    Route::resource('users', UserController::class);
+});
+
 require __DIR__.'/auth.php';

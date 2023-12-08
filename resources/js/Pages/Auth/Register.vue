@@ -12,6 +12,8 @@ const form = useForm({
     email: '',
     password: '',
     password_confirmation: '',
+    role_id: null,
+    status: null
 });
 
 const submit = () => {
@@ -103,31 +105,18 @@ const submit = () => {
                 <InputError class="mt-2" :message="form.errors.password_confirmation" />
             </div>
 
-            <div class="flex items-center space-x-2">
-                <span class="text-gray-600">Inactive</span>
-                <label
-                    for="toggle"
-                    class="flex items-center cursor-pointer"
-                >
-                    <div class="relative">
-                        <!-- Hidden input to store the status value -->
-                        <input
-                            name="role_id"
-                            type="checkbox"
-                            id="toggle"
-                            class="sr-only"
-                            :checked="status"
-                            @change="toggleStatus"
-                        />
-                        <!-- Visible toggle switch -->
-                        <div class="w-10 h-4 bg-gray-300 rounded-full shadow-inner"></div>
-                        <!-- Switch thumb -->
-                        <div class="absolute w-6 h-6 bg-white rounded-full shadow-md transform translate-x-0 transition-transform"></div>
-                    </div>
-                </label>
-                <span class="text-green-500">Active</span>
+            <div class="mt-4">
+                <InputLabel for="role" value="Role" />
+                <select v-model="form.role_id" @change="handleRoleChange" id="role">
+                <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.name }}</option>
+                </select>
             </div>
-
+            <div class="mt-4">
+                <InputLabel for="status" value="Status" />
+                <select v-model="form.status" @change="handleStatusChange" id="status">
+                <option v-for="statusItem in statusLists" :key="statusItem.id" :value="statusItem.id">{{ statusItem.name }}</option>
+                </select>
+            </div>
 
             <div class="flex items-center justify-end mt-4">
                 <Link
@@ -148,14 +137,31 @@ const submit = () => {
 export default {
     data() {
         return {
-            status: false, // Initial status value
+            roles: [
+                { id: 1, name: 'Admin' },
+                { id: 2, name: 'SubAdmin' },
+                { id: 3, name: 'User' },
+                // Add more roles as needed
+            ],
+            statusLists: [
+                { id: 1, name: 'Active' },
+                { id: 0, name: 'In Active' },
+                // Add more roles as needed
+            ],
         };
     },
     methods: {
         toggleStatus() {
-            console.log('jjj');
             this.status = !this.status;
             // Add logic to update the status in your database or perform other actions.
+        },
+        handleRoleChange() {
+            // Emit an event or perform any action when the role is changed
+            this.$emit('roleChanged', this.selectedRole);
+        },
+        handleStatusChange() {
+            // Emit an event or perform any action when the role is changed
+            this.$emit('statusChanged', this.selectedRole);
         },
     }
 };

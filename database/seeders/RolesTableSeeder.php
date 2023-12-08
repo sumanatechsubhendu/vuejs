@@ -17,6 +17,7 @@ class RolesTableSeeder extends Seeder
         // You can customize the roles as needed
         $roles = [
             ['name' => 'Admin', 'description' => 'Administrator'],
+            ['name' => 'Subadmin', 'description' => 'Subadmin'],
             ['name' => 'User', 'description' => 'Regular User'],
             // Add more roles as needed
         ];
