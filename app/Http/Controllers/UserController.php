@@ -121,25 +121,28 @@ class UserController extends Controller
             $query->where(function ($query) use ($value) {
                 Collection::wrap($value)->each(function ($value) use ($query) {
                     $query
-                        ->orWhere('first_name', 'LIKE', "%{$value}%")
-                        ->orWhere('email', 'LIKE', "%{$value}%");
+                        ->orWhere('users.first_name', 'LIKE', "%{$value}%")
+                        ->orWhere('users.email', 'LIKE', "%{$value}%");
                 });
             });
         });
         $users = QueryBuilder::for(User::class)
-        ->select(['id', 'first_name', 'email', 'created_at']) // Select the desired columns
-        ->addSelect(\DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as formated_created_at"))
-        ->defaultSort('first_name')
-        ->allowedSorts(['id','first_name', 'email'])
-        ->allowedFilters(['first_name', 'email', $globalSearch])
+        ->select(['users.id', 'users.first_name', 'users.email', 'users.created_at', 'roles.name']) // Select the desired columns
+        ->addSelect(\DB::raw("DATE_FORMAT(users.created_at, '%Y-%m-%d') as formatted_created_at"))
+        ->join('roles', 'users.role_id', '=', 'roles.id') // Join with roles table
+        ->defaultSort('users.first_name')
+        ->allowedSorts(['id', 'first_name', 'email', 'name'])
+        ->allowedFilters(['users.first_name', 'users.email', $globalSearch])
         ->paginate($perPage)
         ->withQueryString();
+        //dd($users);
 
         return Inertia::render('User/User-dt', ['users' => $users])->table(function (InertiaTable $table) {
             $table->column('id', 'ID', searchable: true, sortable: true);
             $table->column('first_name', 'User Name', searchable: true, sortable: true);
             $table->column('email', 'Email Address', searchable: true, sortable: true);
-            $table->column('formated_created_at', 'Join Date', searchable: true, sortable: true);
+            $table->column('name', 'Role Name', searchable: true, sortable: true);
+            $table->column('formatted_created_at', 'Join Date', searchable: true, sortable: false);
         });
     }
 }
