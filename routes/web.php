@@ -49,6 +49,9 @@ Route::resource('posts', PostController::class);
 // For backend users
 Route::group(['middleware' => ['auth', 'role:Admin']], function () {
     Route::resource('users', UserController::class);
+   /// Route::get('/users-dt',UserController::class, 'dataTable')->name('users-dt');
+    // Define route for data table
+    Route::get('/users-dt', [UserController::class, 'dataTable'])->name('users-dt');
 });
 
 require __DIR__.'/auth.php';

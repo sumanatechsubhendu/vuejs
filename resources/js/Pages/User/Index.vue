@@ -13,7 +13,7 @@
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <div class="p-6 bg-white border-b border-gray-200">
                         <div class="mb-4">
-                            <!-- <Link
+                            <Link
                                 class="
                                     px-6
                                     py-2
@@ -22,10 +22,10 @@
                                     bg-green-500
                                     rounded
                                 "
-                                :href="route('users.create')"
+                                :href="route('users-dt')"
                             >
-                                users Create
-                            </Link> -->
+                                User Data Table
+                            </Link>
                         </div>
                         <!-- <UserTable :users="users.data" /> -->
                         <table>
