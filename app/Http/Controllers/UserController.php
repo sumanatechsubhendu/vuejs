@@ -114,8 +114,9 @@ class UserController extends Controller
         return Redirect::route('posts.index');
     }
 
-    public function dataTable()
+    public function dataTable(Request $request)
     {
+        $perPage = isset($_GET['perPage']) ? $_GET['perPage'] : 10;
         $globalSearch = AllowedFilter::callback('global', function ($query, $value) {
             $query->where(function ($query) use ($value) {
                 Collection::wrap($value)->each(function ($value) use ($query) {
@@ -126,17 +127,19 @@ class UserController extends Controller
             });
         });
         $users = QueryBuilder::for(User::class)
+        ->select(['id', 'first_name', 'email', 'created_at']) // Select the desired columns
+        ->addSelect(\DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as formated_created_at"))
         ->defaultSort('first_name')
-        ->allowedSorts(['first_name', 'email'])
+        ->allowedSorts(['id','first_name', 'email'])
         ->allowedFilters(['first_name', 'email', $globalSearch])
-        ->paginate(8)
+        ->paginate($perPage)
         ->withQueryString();
 
         return Inertia::render('User/User-dt', ['users' => $users])->table(function (InertiaTable $table) {
             $table->column('id', 'ID', searchable: true, sortable: true);
             $table->column('first_name', 'User Name', searchable: true, sortable: true);
             $table->column('email', 'Email Address', searchable: true, sortable: true);
-            $table->column('created_at', 'Join Date', searchable: true, sortable: true);
+            $table->column('formated_created_at', 'Join Date', searchable: true, sortable: true);
         });
     }
 }
