@@ -54,4 +54,16 @@ Route::group(['middleware' => ['auth', 'role:Admin']], function () {
     Route::get('/users-dt', [UserController::class, 'dataTable'])->name('users-dt');
 });
 
+// Route::middleware('create-users')->group(function () {
+//     Route::get(
+//         '/users/create',
+//         [\App\Http\Controllers\UserController::class, 'create']
+//     );
+
+//     Route::post(
+//         '/users',
+//         [\App\Http\Controllers\UserController::class, 'store']
+//     );
+// });
+
 require __DIR__.'/auth.php';
