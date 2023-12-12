@@ -13,10 +13,20 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('first_name');
+            $table->string('last_name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            // Boolean column for status
+            $table->boolean('status')
+                ->comment('0: Inactive, 1: Active')
+                ->default(false);
+            // Add the foreign key column
+            $table->unsignedBigInteger('role_id');
+
+            // Add the foreign key constraint
+            $table->foreign('role_id')->references('id')->on('roles');
             $table->rememberToken();
             $table->timestamps();
         });

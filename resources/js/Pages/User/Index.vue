@@ -4,7 +4,7 @@
     <BreezeAuthenticatedLayout>
         <template #header>
             <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                Post
+                User
             </h2>
         </template>
 
@@ -22,36 +22,39 @@
                                     bg-green-500
                                     rounded
                                 "
-                                :href="route('posts.create')"
+                                :href="route('users-dt')"
                             >
-                                Posts Create
+                                User Data Table
                             </Link>
                         </div>
+                        <!-- <UserTable :users="users.data" /> -->
                         <table>
                             <thead class="font-bold bg-gray-300 border-b-2">
                                 <td class="px-4 py-2">ID</td>
-                                <td class="px-4 py-2">Title</td>
-                                <td class="px-4 py-2">Description</td>
+                                <td class="px-4 py-2">Name</td>
+                                <td class="px-4 py-2">Email</td>
+                                <td class="px-4 py-2">Status</td>
                                 <td class="px-4 py-2">Action</td>
                             </thead>
                             <tbody>
-                                <tr v-for="post in posts.data" :key="post.id">
-                                    <td class="px-4 py-2">{{ post.id }}</td>
-                                    <td class="px-4 py-2">{{ post.title }}
+                                <tr v-for="user in users.data" :key="user.id">
+                                    <td class="px-4 py-2">{{ user.id }}</td>
+                                    <td class="px-4 py-2">{{ user.first_name }} {{ user.last_name }}</td>
+                                    <td class="px-4 py-2">
+                                        {{ user.email }}
                                     </td>
                                     <td class="px-4 py-2">
-                                        {{ post.description }}<br/>
-                                        <b>Slug:</b>{{ post.slug }}
+                                        {{ user.status }}
                                     </td>
                                     <td class="px-4 py-2 font-extrabold">
                                         <Link
                                             class="text-green-700"
-                                            :href="route('posts.edit', post.id)"
+                                            :href="route('users.edit', user.id)"
                                         >
                                             Edit
                                         </Link>
                                         <Link
-                                            @click="destroy(post.id)"
+                                            @click="destroy(user.id)"
                                             class="text-red-700"
                                             >Delete</Link
                                         >
@@ -59,8 +62,9 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <div v-if="posts.data.length" class="w-full flex justify-center mt-8 mb-8">
-                            <Pagination :links="posts.links" />
+                         <!-- Pagination links -->
+                         <div v-if="users.data.length" class="w-full flex justify-center mt-8 mb-8">
+                            <Pagination :links="users.links" />
                         </div>
                     </div>
                 </div>
@@ -73,6 +77,7 @@
 import Pagination from '@/Components/UI/Pagination.vue'
 import BreezeAuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import BreezeNavLink from "@/Components/NavLink.vue";
+import UserTable from '@/Components/UserTable.vue';
 import { Head } from "@inertiajs/inertia-vue3";
 import { Link } from "@inertiajs/inertia-vue3";
 export default {
@@ -81,20 +86,20 @@ export default {
         Head,
         BreezeNavLink,
         Link,
+        UserTable,
         Pagination
     },
+    data() {
+        return {
+        users: [] // Fetch and populate users array from your Laravel backend
+        };
+    },
     props: {
-        posts: Object,
+        users: Object,
     },
     methods: {
         destroy(id) {
-            // Ask for confirmation
-            const isConfirmed = window.confirm("Are you sure you want to delete this post?");
-
-            // If user confirms, proceed with deletion
-            if (isConfirmed) {
-                this.$inertia.delete(route("posts.destroy", id));
-            }
+            this.$inertia.delete(route("users.destroy", id));
         },
     },
 };

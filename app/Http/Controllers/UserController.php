@@ -3,11 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
+use ProtoneMedia\LaravelQueryBuilderInertiaJs\InertiaTable;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
-class PostController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,9 +21,9 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::latest()->paginate(10);
+        $users = User::latest()->paginate(10);
 
-        return Inertia::render('Post/Index', ['posts' => $posts]);
+        return Inertia::render('User/Index', ['users' => $users]);
     }
 
     /**
@@ -42,7 +47,6 @@ class PostController extends Controller
         Post::create(
             Request::validate([
                 'title' => ['required', 'max:90'],
-                'slug' => ['required', 'max:90'],
                 'description' => ['required'],
             ])
         );
@@ -72,7 +76,6 @@ class PostController extends Controller
         return Inertia::render('Post/Edit', [
             'post' => [
                 'id' => $post->id,
-                'slug' => $post->slug,
                 'title' => $post->title,
                 'description' => $post->description
             ]
@@ -109,5 +112,37 @@ class PostController extends Controller
         $post->delete();
 
         return Redirect::route('posts.index');
+    }
+
+    public function dataTable(Request $request)
+    {
+        $perPage = isset($_GET['perPage']) ? $_GET['perPage'] : 10;
+        $globalSearch = AllowedFilter::callback('global', function ($query, $value) {
+            $query->where(function ($query) use ($value) {
+                Collection::wrap($value)->each(function ($value) use ($query) {
+                    $query
+                        ->orWhere('users.first_name', 'LIKE', "%{$value}%")
+                        ->orWhere('users.email', 'LIKE', "%{$value}%");
+                });
+            });
+        });
+        $users = QueryBuilder::for(User::class)
+        ->select(['users.id', 'users.first_name', 'users.email', 'users.created_at', 'roles.name']) // Select the desired columns
+        ->addSelect(\DB::raw("DATE_FORMAT(users.created_at, '%Y-%m-%d') as formatted_created_at"))
+        ->join('roles', 'users.role_id', '=', 'roles.id') // Join with roles table
+        ->defaultSort('users.first_name')
+        ->allowedSorts(['id', 'first_name', 'email', 'name'])
+        ->allowedFilters(['users.first_name', 'users.email', $globalSearch])
+        ->paginate($perPage)
+        ->withQueryString();
+        //dd($users);
+
+        return Inertia::render('User/User-dt', ['users' => $users])->table(function (InertiaTable $table) {
+            $table->column('id', 'ID', searchable: true, sortable: true);
+            $table->column('first_name', 'User Name', searchable: true, sortable: true);
+            $table->column('email', 'Email Address', searchable: true, sortable: true);
+            $table->column('name', 'Role Name', searchable: true, sortable: true);
+            $table->column('formatted_created_at', 'Join Date', searchable: true, sortable: false);
+        });
     }
 }

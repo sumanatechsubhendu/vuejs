@@ -23,6 +23,7 @@ class PostFactory extends Factory
     {
         return [
             'title' => $this->faker->title(),
+            'slug' => $this->faker->slug(),
             'description' => $this->faker->text(),
         ];
     }

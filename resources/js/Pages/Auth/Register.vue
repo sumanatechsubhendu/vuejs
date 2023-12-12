@@ -7,10 +7,13 @@ import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 const form = useForm({
-    name: '',
+    first_name: '',
+    last_name: '',
     email: '',
     password: '',
     password_confirmation: '',
+    role_id: null,
+    status: null
 });
 
 const submit = () => {
@@ -26,19 +29,35 @@ const submit = () => {
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="name" value="Name" />
+                <InputLabel for="first_name" value="First Name" />
 
                 <TextInput
-                    id="name"
+                    id="first_name"
                     type="text"
                     class="mt-1 block w-full"
-                    v-model="form.name"
+                    v-model="form.first_name"
                     required
                     autofocus
                     autocomplete="name"
                 />
 
-                <InputError class="mt-2" :message="form.errors.name" />
+                <InputError class="mt-2" :message="form.errors.first_name" />
+            </div>
+
+            <div>
+                <InputLabel for="last_name" value="Last Name" />
+
+                <TextInput
+                    id="last_name"
+                    type="text"
+                    class="mt-1 block w-full"
+                    v-model="form.last_name"
+                    required
+                    autofocus
+                    autocomplete="name"
+                />
+
+                <InputError class="mt-2" :message="form.errors.last_name" />
             </div>
 
             <div class="mt-4">
@@ -86,6 +105,19 @@ const submit = () => {
                 <InputError class="mt-2" :message="form.errors.password_confirmation" />
             </div>
 
+            <div class="mt-4">
+                <InputLabel for="role" value="Role" />
+                <select v-model="form.role_id" @change="handleRoleChange" id="role">
+                <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.name }}</option>
+                </select>
+            </div>
+            <div class="mt-4">
+                <InputLabel for="status" value="Status" />
+                <select v-model="form.status" @change="handleStatusChange" id="status">
+                <option v-for="statusItem in statusLists" :key="statusItem.id" :value="statusItem.id">{{ statusItem.name }}</option>
+                </select>
+            </div>
+
             <div class="flex items-center justify-end mt-4">
                 <Link
                     :href="route('login')"
@@ -101,3 +133,36 @@ const submit = () => {
         </form>
     </GuestLayout>
 </template>
+<script>
+export default {
+    data() {
+        return {
+            roles: [
+                { id: 1, name: 'Admin' },
+                { id: 2, name: 'SubAdmin' },
+                { id: 3, name: 'User' },
+                // Add more roles as needed
+            ],
+            statusLists: [
+                { id: 1, name: 'Active' },
+                { id: 0, name: 'In Active' },
+                // Add more roles as needed
+            ],
+        };
+    },
+    methods: {
+        toggleStatus() {
+            this.status = !this.status;
+            // Add logic to update the status in your database or perform other actions.
+        },
+        handleRoleChange() {
+            // Emit an event or perform any action when the role is changed
+            this.$emit('roleChanged', this.selectedRole);
+        },
+        handleStatusChange() {
+            // Emit an event or perform any action when the role is changed
+            this.$emit('statusChanged', this.selectedRole);
+        },
+    }
+};
+</script>

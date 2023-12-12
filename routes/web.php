@@ -3,6 +3,8 @@
 use App\Http\Controllers\ExampleController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserController;
+use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -28,7 +30,10 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    //return Inertia::render('Dashboard');
+    $users = User::all();
+
+    return Inertia::render('Dashboard', ['users' => $users]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -36,6 +41,29 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-Route::resource('posts', PostController::class);
+
+
 Route::get('/about-us', [ExampleController::class, 'index'])->name('about-us');
+
+Route::resource('posts', PostController::class);
+// For backend users
+Route::group(['middleware' => ['auth', 'role:Admin']], function () {
+    Route::resource('users', UserController::class);
+   /// Route::get('/users-dt',UserController::class, 'dataTable')->name('users-dt');
+    // Define route for data table
+    Route::get('/users-dt', [UserController::class, 'dataTable'])->name('users-dt');
+});
+
+// Route::middleware('create-users')->group(function () {
+//     Route::get(
+//         '/users/create',
+//         [\App\Http\Controllers\UserController::class, 'create']
+//     );
+
+//     Route::post(
+//         '/users',
+//         [\App\Http\Controllers\UserController::class, 'store']
+//     );
+// });
+
 require __DIR__.'/auth.php';
