@@ -122,6 +122,7 @@ class UserController extends Controller
                 Collection::wrap($value)->each(function ($value) use ($query) {
                     $query
                         ->orWhere('users.first_name', 'LIKE', "%{$value}%")
+                        ->orWhere('roles.name', 'LIKE', "%{$value}%")
                         ->orWhere('users.email', 'LIKE', "%{$value}%");
                 });
             });
@@ -132,17 +133,17 @@ class UserController extends Controller
         ->join('roles', 'users.role_id', '=', 'roles.id') // Join with roles table
         ->defaultSort('users.first_name')
         ->allowedSorts(['id', 'first_name', 'email', 'name'])
-        ->allowedFilters(['users.first_name', 'users.email', $globalSearch])
+        ->allowedFilters(['first_name', 'email', $globalSearch])
         ->paginate($perPage)
         ->withQueryString();
         //dd($users);
 
         return Inertia::render('User/User-dt', ['users' => $users])->table(function (InertiaTable $table) {
-            $table->column('id', 'ID', searchable: true, sortable: true);
+            $table->column('id', 'ID', searchable: false, sortable: true);
             $table->column('first_name', 'User Name', searchable: true, sortable: true);
             $table->column('email', 'Email Address', searchable: true, sortable: true);
-            $table->column('name', 'Role Name', searchable: true, sortable: true);
-            $table->column('formatted_created_at', 'Join Date', searchable: true, sortable: false);
+            $table->column('name', 'Role Name', searchable: false, sortable: true);
+            $table->column('formatted_created_at', 'Join Date', searchable: false, sortable: false);
         });
     }
 }
